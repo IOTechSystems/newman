@@ -12,23 +12,14 @@ RUN if [ ! $(echo $NEWMAN_VERSION | grep -oE "^[0-9]+\.[0-9]+\.[0-9]+$") ]; then
         echo "\033[0;31mA valid semver Newman version is required in the NEWMAN_VERSION build-arg\033[0m"; \
         exit 1; \
     fi && \
-    # Add the latest Alpine Linux package to the repositories list
-    echo -e "http://nl.alpinelinux.org/alpine/v3.7/main\nhttp://nl.alpinelinux.org/alpine/v3.7/community" > /etc/apk/repositories && \
-    # Update existing packages and install Node dependencies
     apk add --update --no-cache libgcc libstdc++ jq curl && \
-    # Determine the complete Semver Node version for the provided Node major version in $NODE_VERSION
-    FULL_NODE_VERSION=$(curl --silent "https://api.github.com/repos/${ALPINE_NODE_REPO}/releases" | jq -r '.[].tag_name' | grep -oE "^${NODE_VERSION}\.\d+\.\d+$" | sort -r -t. -k 1,1nr -k 2,2nr -k 3,3nr | head -n1) && \
-    # Download the appropriate Node binary for Alpine Linux
-    # curl --silent -L "https://github.com/${ALPINE_NODE_REPO}/releases/download/${FULL_NODE_VERSION}/node-v${FULL_NODE_VERSION}-linux-x86_64-alpine.tar.gz" > /etc/alpine-node-${NODE_VERSION}.tar.gz 
     apk add --update nodejs && \
     # Extract and install Node from the binary downloaded in the previous step
     #tar -xzf /etc/alpine-node-${NODE_VERSION}.tar.gz -C /usr --no-same-owner && \
     # Install Newman globally
     npm install --global newman@${NEWMAN_VERSION} && \
-    # Prune redundant packages
     apk del jq curl
-    # Clear Alpine Node binary
-    # rm /etc/alpine-node-${NODE_VERSION}.tar.gz;
+
 
 # Set workdir to /etc/newman
 # When running the image, mount the directory containing your collection to this location
