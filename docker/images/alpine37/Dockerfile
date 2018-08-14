@@ -17,7 +17,7 @@ RUN if [ ! $(echo $NEWMAN_VERSION | grep -oE "^[0-9]+\.[0-9]+\.[0-9]+$") ]; then
     # Extract and install Node from the binary downloaded in the previous step
     #tar -xzf /etc/alpine-node-${NODE_VERSION}.tar.gz -C /usr --no-same-owner && \
     # Install Newman globally
-    npm update -g && \
+    npm config set unsafe-perm true && \
     npm install --global newman@${NEWMAN_VERSION} && \
     apk del jq curl
 
